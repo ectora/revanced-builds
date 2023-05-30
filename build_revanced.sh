@@ -25,8 +25,8 @@ declare -a patches
 declare -A artifacts
 
 if [ "$EXTENDED_SUPPORT" = "true" ]; then
+    artifacts["revanced-integrations.apk"]="inotia00/revanced-integrations revanced-integrations .apk"
     artifacts["revanced-cli.jar"]="inotia00/revanced-cli revanced-cli .jar"
-    artifacts["revanced-integrations.jar"]="inotia00/revanced-integrations revanced-integrations .jar"
     artifacts["revanced-patches.jar"]="inotia00/revanced-patches revanced-patches .jar"
 else
     artifacts["revanced-integrations.apk"]="revanced/revanced-integrations revanced-integrations .apk"
@@ -103,7 +103,7 @@ function build_youtube_root() {
         java -jar revanced-cli.jar -m revanced-integrations.apk -b revanced-patches.jar --mount \
             -e microg-support ${patches[@]} \
             $EXPERIMENTAL \
-            -a com.google.android.youtube.apk -o "build/revanced-youtube-$(cat versions.json | grep -oP '(?<="com.google.android.youtube.apk": ")[^"]*')-root.apk"
+            -a com.google.android.youtube.apk -o "build/revanced$([ "$EXTENDED_SUPPORT" = "true" ] && echo "-extended")-youtube-$(cat $([ "$EXTENDED_SUPPORT" = "true" ] && echo versions_extended.json || echo versions.json) | grep -oP '(?<="com.google.android.youtube.apk": ")[^"]*')-root.apk"
     else
         echo "Cannot find YouTube APK, skipping build"
     fi
@@ -118,7 +118,7 @@ function build_youtube_nonroot() {
         java -jar revanced-cli.jar -m revanced-integrations.apk -b revanced-patches.jar \
             ${patches[@]} \
             $EXPERIMENTAL \
-            -a com.google.android.youtube.apk -o "build/revanced-youtube-$(cat versions.json | grep -oP '(?<="com.google.android.youtube.apk": ")[^"]*').apk"
+            -a com.google.android.youtube.apk -o "build/revanced$([ "$EXTENDED_SUPPORT" = "true" ] && echo "-extended")-youtube-$(cat $([ "$EXTENDED_SUPPORT" = "true" ] && echo versions_extended.json || echo versions.json) | grep -oP '(?<="com.google.android.youtube.apk": ")[^"]*').apk"
     else
         echo "Cannot find YouTube APK, skipping build"
     fi
@@ -131,10 +131,10 @@ function build_ytmusic_root() {
 
     if [ -f "com.google.android.apps.youtube.music.apk" ]; then
         echo "Building Root APK"
-        java -jar revanced-cli.jar -b revanced-patches.jar --mount \
+        java -jar revanced-cli.jar $([ "$EXTENDED_SUPPORT" = "true" ] && echo "-m revanced-integrations.apk") -b revanced-patches.jar --mount \
             -e microg-support ${patches[@]} \
             $EXPERIMENTAL \
-            -a com.google.android.apps.youtube.music.apk -o "build/revanced-music-$(cat versions.json | grep -oP '(?<="com.google.android.apps.youtube.music.apk": ")[^"]*')-root.apk"
+            -a com.google.android.apps.youtube.music.apk -o "build/revanced$([ "$EXTENDED_SUPPORT" = "true" ] && echo "-extended")-music-$(cat $([ "$EXTENDED_SUPPORT" = "true" ] && echo versions_extended.json || echo versions.json) | grep -oP '(?<="com.google.android.apps.youtube.music.apk": ")[^"]*')-root.apk"
     else
         echo "Cannot find YouTube Music APK, skipping build"
     fi
@@ -147,10 +147,10 @@ function build_ytmusic_nonroot() {
 
     if [ -f "com.google.android.apps.youtube.music.apk" ]; then
         echo "Building Non-root APK"
-        java -jar revanced-cli.jar -b revanced-patches.jar \
+        java -jar revanced-cli.jar $([ "$EXTENDED_SUPPORT" = "true" ] && echo "-m revanced-integrations.apk") -b revanced-patches.jar \
             ${patches[@]} \
             $EXPERIMENTAL \
-            -a com.google.android.apps.youtube.music.apk -o "build/revanced-music-$(cat versions.json | grep -oP '(?<="com.google.android.apps.youtube.music.apk": ")[^"]*').apk"
+            -a com.google.android.apps.youtube.music.apk -o "build/revanced$([ "$EXTENDED_SUPPORT" = "true" ] && echo "-extended")-music-$(cat $([ "$EXTENDED_SUPPORT" = "true" ] && echo versions_extended.json || echo versions.json) | grep -oP '(?<="com.google.android.apps.youtube.music.apk": ")[^"]*').apk"
     else
         echo "Cannot find YouTube Music APK, skipping build"
     fi
